@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Resources:
+  WebhookHandlerFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: dist/handler.handler
+      Runtime: nodejs20.x
+      CodeUri: .
+      Environment:
+        Variables:
+          USERS_TABLE: !Ref UsersTable
+          RECORDS_TABLE: !Ref RecordsTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /webhook
+            Method: post
+
+  UsersTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: 'Users'
+      AttributeDefinitions:
+        - AttributeName: 'id'
+          AttributeType: 'N'
+      KeySchema:
+        - AttributeName: 'id'
+          KeyType: 'HASH'
+      BillingMode: PAY_PER_REQUEST
+
+  RecordsTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: 'Records'
+      AttributeDefinitions:
+        - AttributeName: 'RecordId'
+          AttributeType: 'S'
+        - AttributeName: 'UserId'
+          AttributeType: 'S'
+      KeySchema:
+        - AttributeName: 'RecordId'
+          KeyType: 'HASH'
+        - AttributeName: 'UserId'
+          KeyType: 'RANGE'
+      BillingMode: PAY_PER_REQUEST

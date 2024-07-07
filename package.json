@@ -1,0 +1,22 @@
+{
+  "name": "baneksbot-aws",
+  "version": "1.0.0",
+  "main": "dist/handler.js",
+  "repository": "https://github.com/energizer91/baneksbot-aws.git",
+  "author": "energizer91",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.140",
+    "aws-sdk": "^2.1655.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "eslint": "^9.6.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.3.2",
+    "typescript": "^5.5.3"
+  }
+}
