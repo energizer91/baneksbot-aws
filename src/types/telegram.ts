@@ -273,6 +273,16 @@ export type InlineKeyboardButton = {
   pay?: boolean;
 };
 
+export type ReplyParameters = {
+  message_id: number;
+  chat_id?: number | string;
+  allow_sending_without_reply?: boolean;
+  quote?: string;
+  quote_parse_mode?: ParseMode;
+  quote_entities?: MessageEntity[];
+  quote_position?: number;
+};
+
 export type CallbackQuery = {
   id: string;
   from: User;
@@ -553,15 +563,21 @@ export type Update = {
   poll_answer?: PollAnswer;
 };
 
-export type MessageParams = {
-  caption?: string;
-  chat_id?: UserId;
-  remove_keyboard?: boolean;
-  reply_to_message_id?: number;
-  disable_notification?: boolean;
+export type CommonParams = {
   parse_mode?: ParseMode;
-  reply_markup?: string;
-  disable_web_page_preview?: boolean;
+  reply_markup?: ReplyMarkup;
+  disable_notification?: boolean;
+  reply_parameters?: ReplyParameters;
+};
+
+export type SendMessageParams = CommonParams & {
+  chat_id: UserId;
+  text: string;
+};
+
+export type SendMediaParams = CommonParams & {
+  chat_id: UserId;
+  caption?: string;
 };
 
 export type OtherParams = {
@@ -623,7 +639,7 @@ export type LabeledPrice = {
   amount: number;
 };
 
-export type AllMessageParams = MessageParams & OtherParams;
+export type AllMessageParams = SendMessageParams & OtherParams;
 
 export enum ChatAction {
   typing = "typing",

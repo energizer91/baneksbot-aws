@@ -4,11 +4,12 @@ Resources:
   WebhookHandlerFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
-      Handler: dist/handler.handler
+      Handler: dist/webhookHandler.handler
       Runtime: nodejs20.x
       CodeUri: .
       Environment:
         Variables:
+          TELEGRAM_BOT_NAME: !Ref TelegramBotName
           USERS_TABLE: !Ref UsersTable
           RECORDS_TABLE: !Ref RecordsTable
       Events:
@@ -17,6 +18,27 @@ Resources:
           Properties:
             Path: /webhook
             Method: post
+      Policies:
+        - Statement:
+            Effect: Allow
+            Action:
+              - sqs:SendMessage
+            Resource: !GetAtt MessageQueue.Arn
+
+  MethodHandlerFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: dist/methodHandler.handler
+      Runtime: nodejs20.x
+      CodeUri: .
+      Environment:
+        Variables:
+          TELEGRAM_BOT_TOKEN: !Ref TelegramBotToken
+      Events:
+        SQSTrigger:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt MessageQueue.Arn
 
   UsersTable:
     Type: 'AWS::DynamoDB::Table'
@@ -45,3 +67,16 @@ Resources:
         - AttributeName: 'UserId'
           KeyType: 'RANGE'
       BillingMode: PAY_PER_REQUEST
+
+  MessageQueue:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      QueueName: !Sub "${AWS::StackName}-MessageQueue"
+
+Parameters:
+  TelegramBotName:
+    Type: String
+    Description: The Telegram Bot Name
+  TelegramBotToken:
+    Type: String
+    Description: The Telegram Bot Token
