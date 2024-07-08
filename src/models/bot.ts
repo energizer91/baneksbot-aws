@@ -14,6 +14,7 @@ export async function performCommand(
       await telegram.sendMessage({ chat_id: message.chat.id, text: "pong" });
       break;
     case "/start":
+      await telegram.sendMessage({ chat_id: message.chat.id, text: "privet" });
       break;
     default:
   }
@@ -26,4 +27,5 @@ export async function performMessage(
   telegram: WebhookTelegram,
 ) {
   console.log("Getting message", text, "from", user, "with data", message);
+  return telegram.sendMessage({ chat_id: message.chat.id, text: "sam takoy" });
 }

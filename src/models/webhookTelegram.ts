@@ -19,7 +19,7 @@ class WebhookTelegram extends Telegram {
 
     const params = {
       QueueUrl: this.url,
-      MessageBody: JSON.stringify(data),
+      MessageBody: JSON.stringify({ method, data }),
     };
 
     const result = await sqs.sendMessage(params).promise();
