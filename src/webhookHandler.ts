@@ -54,7 +54,7 @@ async function processWebhook(update: Update) {
   }
 }
 
-export const handler: Handler<Update> = async (event, context) => {
+export const handler: Handler = async (event, context) => {
   if (!telegram) {
     const invokedFunctionArn = context.invokedFunctionArn;
     const [arn, aws, lambda, region, accountId] = invokedFunctionArn.split(":");
@@ -64,7 +64,16 @@ export const handler: Handler<Update> = async (event, context) => {
     telegram = new WebhookTelegram(queueUrl);
   }
 
-  processWebhook(event).catch(console.error);
+  try {
+    const body = JSON.parse(event.body) as Update;
+
+    processWebhook(body).catch(console.error);
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: "Error serializing body",
+    };
+  }
 
   return {
     statusCode: 200,
