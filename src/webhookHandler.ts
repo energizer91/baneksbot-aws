@@ -18,7 +18,7 @@ async function processWebhook(update: Update) {
 
   if (message) {
     if (message.text) {
-      const { text, from } = message;
+      const { text } = message;
 
       if (text && text.startsWith("/")) {
         const command = text.split(" ");
@@ -67,12 +67,9 @@ export const handler: Handler = async (event, context) => {
   try {
     const body = JSON.parse(event.body) as Update;
 
-    processWebhook(body).catch(console.error);
+    await processWebhook(body);
   } catch (error) {
-    return {
-      statusCode: 500,
-      body: "Error serializing body",
-    };
+    console.error(error);
   }
 
   return {
