@@ -9,6 +9,7 @@ const { TELEGRAM_BOT_NAME, AWS_LAMBDA_FUNCTION_NAME } = process.env;
 let telegram: WebhookTelegram;
 
 async function processWebhook(update: Update) {
+  console.log("Getting update", update);
   const { message, inline_query, callback_query } = update;
   const user = await getOrCreateUser(
     message?.from || inline_query?.from || callback_query?.from,
