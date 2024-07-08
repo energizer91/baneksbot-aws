@@ -17,8 +17,8 @@ export async function getUser(id: number) {
 }
 
 export async function createUser(user: Partial<User>) {
-  if (!user.id) {
-    throw new Error("User id not set");
+  if (user.id === 0) {
+    console.log("Attempt to create user with id 0", user);
   }
 
   const params = {
