@@ -12,6 +12,7 @@ Resources:
           TELEGRAM_BOT_NAME: !Ref TelegramBotName
           USERS_TABLE: !Ref UsersTable
           RECORDS_TABLE: !Ref RecordsTable
+          MESSAGE_QUEUE_NAME: !Sub "${AWS::StackName}-MessageQueue"
       Events:
         Api:
           Type: Api

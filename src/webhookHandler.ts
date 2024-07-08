@@ -4,7 +4,7 @@ import { getOrCreateUser } from "./models/db";
 import { performCommand, performMessage } from "./models/bot";
 import WebhookTelegram from "./models/webhookTelegram";
 
-const { TELEGRAM_BOT_NAME, AWS_LAMBDA_FUNCTION_NAME } = process.env;
+const { TELEGRAM_BOT_NAME, MESSAGE_QUEUE_NAME } = process.env;
 
 let telegram: WebhookTelegram;
 
@@ -58,8 +58,7 @@ export const handler: Handler = async (event, context) => {
   if (!telegram) {
     const invokedFunctionArn = context.invokedFunctionArn;
     const [arn, aws, lambda, region, accountId] = invokedFunctionArn.split(":");
-    const queueName = `${AWS_LAMBDA_FUNCTION_NAME}-MessageQueue`;
-    const queueUrl = `https://sqs.${region}.amazonaws.com/${accountId}/${queueName}`;
+    const queueUrl = `https://sqs.${region}.amazonaws.com/${accountId}/${MESSAGE_QUEUE_NAME}`;
 
     telegram = new WebhookTelegram(queueUrl);
   }
