@@ -22,6 +22,22 @@ Resources:
         - Statement:
             Effect: Allow
             Action:
+              - dynamodb:GetItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+              - dynamodb:DeleteItem
+            Resource: !GetAtt UsersTable.Arn
+        - Statement:
+            Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+              - dynamodb:DeleteItem
+            Resource: !GetAtt RecordsTable.Arn
+        - Statement:
+            Effect: Allow
+            Action:
               - sqs:SendMessage
             Resource: !GetAtt MessageQueue.Arn
 
