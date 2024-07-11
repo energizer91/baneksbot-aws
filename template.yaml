@@ -9,6 +9,7 @@ Resources:
       CodeUri: .
       Environment:
         Variables:
+          TELEGRAM_BOT_TOKEN: !Ref TelegramBotToken
           TELEGRAM_BOT_NAME: !Ref TelegramBotName
           USERS_TABLE: !Ref UsersTable
           RECORDS_TABLE: !Ref RecordsTable

@@ -1,22 +1,21 @@
 import { Message } from "../types/telegram";
 import { User } from "../types/db";
-import WebhookTelegram from "./webhookTelegram";
+import Telegram from "./telegram";
 
 export async function performCommand(
   command: string[],
   message: Message,
   user: User,
-  telegram: WebhookTelegram,
+  telegram: Telegram,
 ) {
   console.log("Command", command, message, user);
   switch (command[0]) {
     case "/ping":
-      await telegram.sendMessage({ chat_id: message.chat.id, text: "pong" });
-      break;
+      return telegram.sendText(message.chat.id, "pong");
     case "/start":
-      await telegram.sendMessage({ chat_id: message.chat.id, text: "privet" });
-      break;
+      return telegram.sendText(message.chat.id, "privet");
     default:
+      return [];
   }
 }
 
@@ -24,8 +23,8 @@ export async function performMessage(
   text: string,
   message: Message,
   user: User,
-  telegram: WebhookTelegram,
+  telegram: Telegram,
 ) {
   console.log("Getting message", text, "from", user, "with data", message);
-  return telegram.sendMessage({ chat_id: message.chat.id, text: "sam takoy" });
+  return telegram.sendText(message.chat.id, "sam takoy");
 }

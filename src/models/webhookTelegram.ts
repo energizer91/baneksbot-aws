@@ -24,7 +24,7 @@ class WebhookTelegram extends Telegram {
 
     const result = await sqs.sendMessage(params).promise();
 
-    return result as R;
+    return <R>result;
   }
 }
 

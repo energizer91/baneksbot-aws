@@ -2,11 +2,13 @@ import { Handler } from "aws-lambda";
 import { Update } from "./types/telegram";
 import { getOrCreateUser } from "./models/db";
 import { performCommand, performMessage } from "./models/bot";
-import WebhookTelegram from "./models/webhookTelegram";
+import MethodTelegram from "./models/methodTelegram";
 
-const { TELEGRAM_BOT_NAME, MESSAGE_QUEUE_NAME } = process.env;
+const { TELEGRAM_BOT_TOKEN, TELEGRAM_BOT_NAME } = process.env;
 
-let telegram: WebhookTelegram;
+const telegram = new MethodTelegram(
+  `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`,
+);
 
 async function processWebhook(update: Update) {
   console.log("Getting update", update);
@@ -36,7 +38,7 @@ async function processWebhook(update: Update) {
               chat.disable_commands &&
               !user.admin
             ) {
-              return;
+              return [];
             }
 
             return performCommand(
@@ -52,15 +54,13 @@ async function processWebhook(update: Update) {
       return performMessage(message.text, message, user, telegram);
     }
   }
+
+  return [];
 }
 
-export const handler: Handler = async (event, context) => {
-  if (!telegram) {
-    const invokedFunctionArn = context.invokedFunctionArn;
-    const [arn, aws, lambda, region, accountId] = invokedFunctionArn.split(":");
-    const queueUrl = `https://sqs.${region}.amazonaws.com/${accountId}/${MESSAGE_QUEUE_NAME}`;
-
-    telegram = new WebhookTelegram(queueUrl);
+export const handler: Handler = async (event) => {
+  if (!TELEGRAM_BOT_TOKEN) {
+    throw new Error("Telegram token not set");
   }
 
   try {

@@ -26,7 +26,7 @@ class MethodTelegram extends Telegram {
       );
     }
 
-    return (await res.json()) as R;
+    return <R>await res.json();
   }
 }
 

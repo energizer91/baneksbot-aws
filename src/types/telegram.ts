@@ -563,7 +563,7 @@ export type Update = {
   poll_answer?: PollAnswer;
 };
 
-export type CommonParams = {
+export type CommonParams = OtherParams & {
   parse_mode?: ParseMode;
   reply_markup?: ReplyMarkup;
   disable_notification?: boolean;
@@ -638,8 +638,6 @@ export type LabeledPrice = {
   label: string;
   amount: number;
 };
-
-export type AllMessageParams = SendMessageParams & OtherParams;
 
 export enum ChatAction {
   typing = "typing",

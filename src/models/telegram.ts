@@ -1,5 +1,7 @@
-import { Message, SendMessageParams } from "../types/telegram";
+import { CommonParams, Message, SendMessageParams } from "../types/telegram";
 import { Method } from "../types/methods";
+
+const MAX_MESSAGE_LENGTH = 4096;
 
 abstract class Telegram {
   protected url: string;
@@ -13,50 +15,60 @@ abstract class Telegram {
     data: D,
   ): Promise<R>;
 
-  public async sendMessage(params: SendMessageParams) {
-    if (!params.chat_id) {
+  public async sendMessage(message: SendMessageParams) {
+    if (!message.chat_id) {
       throw new Error("Chat id not set");
     }
 
-    if (!params.text) {
+    if (!message.text) {
       throw new Error("Message text is empty");
     }
 
-    if (params.text.length > 4096) {
-      const messages = [];
-
-      let messageCursor = 0;
-      let messagePart = "";
-
-      do {
-        messagePart = params.text.slice(messageCursor, messageCursor + 4096);
-
-        if (messagePart) {
-          messages.push(messagePart);
-        }
-
-        messageCursor += 4096;
-      } while (messagePart);
-
-      return this.sendMessages(
-        messages.map((text) => ({ ...params, text })),
-      ).then((m) => m[0]);
-    }
-
-    return this.sendRequest<Message, SendMessageParams>("sendMessage", params);
+    return this.sendRequest<Message, SendMessageParams>("sendMessage", message);
   }
 
-  public async sendMessages(params: SendMessageParams[]): Promise<Message[]> {
-    return Promise.all(params.map(this.sendMessage));
+  public getSeparatedMessages(text: string): string[] {
+    if (!text) return [];
+
+    const messages = [];
+
+    let messageCursor = 0;
+    let messagePart = "";
+
+    do {
+      messagePart = text.slice(
+        messageCursor,
+        messageCursor + MAX_MESSAGE_LENGTH,
+      );
+
+      if (messagePart) {
+        messages.push(messagePart);
+      }
+
+      messageCursor += MAX_MESSAGE_LENGTH;
+    } while (messagePart);
+
+    return messages;
+  }
+
+  public async sendText(
+    chat_id: number,
+    text: string,
+    params?: CommonParams,
+  ): Promise<Message | Message[]> {
+    if (text.length > MAX_MESSAGE_LENGTH) {
+      const texts = this.getSeparatedMessages(text);
+
+      return Promise.all(
+        texts.map((t) => this.sendText(chat_id, t, params) as Promise<Message>),
+      );
+    }
+
+    return this.sendMessage({ ...params, text, chat_id });
   }
 
   public isSameChat(message: Message) {
-    return (
-      message &&
-      message.chat &&
-      message.from &&
-      message.chat.id === message.from.id
-    );
+    return message.chat?.id === message.from?.id;
   }
 
   public isGroup(message: Message) {
